@@ -14,9 +14,9 @@ In a nutshell, here's what it does:
   * Gather all file sizes, and therefore, also directory sizes.
   * List all directories largest to smallest, and same for files.
   * Be able to ignore files less than a certain size while still letting their
-    size count toward their parent directorie's size.
+    size count toward their parent directory's size.
   * Be able to ignore directories less than a certain size while still letting
-    their size count toward their parent directorie's size.
+    their size count toward their parent directory's size.
   * Limit number of files displayed per directory. For instance... Show only
     the top 15 largest files.
   * Limit depth to recurse.
