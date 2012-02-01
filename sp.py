@@ -202,7 +202,7 @@ def sp_main(argv=None):
         argv = sys.argv
     parser = optparse.OptionParser()
     parser.add_option('-d', action="store", default=None, dest='working_dir', help="Root directory to perform the search from.")
-    parser.add_option('-T', action="store", default="1m", dest='dir_threshold', help="Minimum directory size to be listed.(ex. 1m, 13k, 2k, 5g, 12332828)")
+    parser.add_option('-T', action="store", default="500k", dest='dir_threshold', help="Minimum directory size to be listed.(ex. 1m, 13k, 2k, 5g, 12332828)")
     parser.add_option('-t', action="store", default="1k", dest='file_threshold', help="Minimum file size to be listed.(ex. 1m, 13k, 2k, 5g, 12332828)")
     parser.add_option('-l', action="store", default=25, dest='max_file_results', type='int', help="The maximum number of files to list per directory. Files are sorted largest to smallest. -1 = all")
     parser.add_option('-m', action="store", default=None, dest='max_depth', type='int', help="The maximum depth to traverse.")
