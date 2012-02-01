@@ -35,13 +35,14 @@ class PathScanner(object):
     files larger than a threshold, and detailing their location so that you can
     see where your largest disk consumption is.
     """
-    def __init__(self, working_dir=None, file_threshold="1k", folder_threshold="1m", limit=25, max_depth=None):
+    def __init__(self, working_dir=None, file_threshold="1k", folder_threshold="1m", limit=25, max_depth=None, max_list_depth=None):
         if not working_dir:
             working_dir = os.getcwd()
         self.summary_tree = {}
         self.working_dir = working_dir
         self.limit = limit
         self.max_depth = max_depth
+        self.max_list_depth = max_list_depth
         try:
             self.file_threshold = self._parse_filesize(file_threshold)
             self.folder_threshold = self._parse_filesize(folder_threshold)
@@ -140,7 +141,7 @@ class PathScanner(object):
         system, and figures out file sizes, directory sizes in terms of files,
         etc.
         """
-        if self.max_depth and depth > self.max_depth:
+        if self.max_depth != None and depth > self.max_depth:
             return None
         dir_size = 0
         tmp = {'full_path': full_path, 'name': node, 'dirs': [], 'files': []}
@@ -151,38 +152,50 @@ class PathScanner(object):
             if contents:
                 dir_size += contents['size']
                 if contents['size'] >= self.folder_threshold:
-                    tmp['dirs'].append(contents)
+                    if self.max_list_depth != None and depth <= self.max_list_depth:
+                        tmp['dirs'].append(contents)
 
         for f in self._stat_files(full_path, files):
             dir_size += f['size']
             if f['size'] >= self.file_threshold:
-                tmp['files'].append({'name': f['name'], 'size': f['size']})
+                if self.max_list_depth != None and depth <= self.max_list_depth:
+                    tmp['files'].append({'name': f['name'], 'size': f['size']})
 
         tmp['size'] = dir_size
         return tmp
 
-    def _print_data(self, data):
+    def _print_data(self, data, depth=0):
         """
         Does just what it's name suggests. This just pretty prints the data
         in a readable way.
         """
-        print "[%s] %s" % (self._get_human_value(data['size']), data['full_path'])
+        tmp = ""
+        tmp += "[%s] %s\n" % (self._get_human_value(data['size']), data['full_path'])
         if len(data['dirs']):
-            print "Directories:"
-            for d in sorted(data['dirs'], key=lambda d: d['size'], reverse=True):
-                print "\t[%s] %s" % (self._get_human_value(d['size']), d['name'])
+            tmp += "Directories:\n"
+            _dirs = sorted(data['dirs'], key=lambda d: d['size'], reverse=True)
+            max_width = max([len(self._get_human_value(d['size'])) for d in _dirs])
+            for d in _dirs:
+                hv = self._get_human_value(d['size'])
+                tmp += "\t[%s] %s\n" % (hv.rjust(max_width), d['name'])
         else:
-            print " - No Directories -"
+            tmp += " - No Directories -\n"
 
         if len(data['files']):
-            print "Files:"
-            for f in sorted(data['files'], key=lambda f: f['size'], reverse=True)[:self.limit]:
-                print "\t[%s] %s" % (self._get_human_value(f['size']), f['name'])
+            tmp += "Files:\n"
+            _files = sorted(data['files'], key=lambda f: f['size'], reverse=True)[:self.limit]
+            max_width = max([len(self._get_human_value(f['size'])) for f in _files])
+            for f in _files:
+                hv = self._get_human_value(f['size'])
+                tmp += "\t[%s] %s\n" % (hv.rjust(max_width), f['name'])
         else:
-            print " - No Files -"
-        print "\n"
-        for d in sorted(data['dirs'], key=lambda d: d['size'], reverse=True):
-            self._print_data(d)
+            tmp += " - No Files -\n"
+        tmp += "\n"
+
+        if self.max_list_depth != None and depth < self.max_list_depth:
+            for d in sorted(data['dirs'], key=lambda d: d['size'], reverse=True):
+                tmp += self._print_data(d, depth=depth + 1)
+        return tmp
 
     def scan(self):
         """
@@ -191,7 +204,7 @@ class PathScanner(object):
         _full_path, _dirs, _files = self._stat_node(self.working_dir)
         _name = os.path.basename(_full_path)
         all_data = self._fill_node(_full_path, _name, _dirs, _files)
-        self._print_data(all_data)
+        print self._print_data(all_data)
 
 
 def sp_main(argv=None):
@@ -206,9 +219,10 @@ def sp_main(argv=None):
     parser.add_option('-t', action="store", default="1k", dest='file_threshold', help="Minimum file size to be listed.(ex. 1m, 13k, 2k, 5g, 12332828)")
     parser.add_option('-l', action="store", default=25, dest='max_file_results', type='int', help="The maximum number of files to list per directory. Files are sorted largest to smallest. -1 = all")
     parser.add_option('-m', action="store", default=None, dest='max_depth', type='int', help="The maximum depth to traverse.")
+    parser.add_option('-x', action="store", default=None, dest='max_list_depth', type='int', help="The maximum to list -- can still traverse deeper.")
     options, values = parser.parse_args(argv)
     try:
-        pe = PathScanner(options.working_dir, options.file_threshold, options.dir_threshold, options.max_file_results, options.max_depth)
+        pe = PathScanner(options.working_dir, options.file_threshold, options.dir_threshold, options.max_file_results, options.max_depth, options.max_list_depth)
         pe.scan()
         sys.exit(0)
     except Usage, err:
