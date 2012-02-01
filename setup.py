@@ -12,14 +12,14 @@ f.close()
 
 setup(
     name = 'sp',
-    version = '1.0.0',
+    version = '1.0.2',
     author = 'Philip Thrasher',
     author_email = 'philipthrasher@gmail.com',
     description = "Quickly find out which directories / files are hogging your disk space.",
     license = "Unlicense",
     classifiers = [
         "License :: Public Domain",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: System Administrators",
         "Operating System :: OS Independent",

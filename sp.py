@@ -12,7 +12,7 @@ import optparse
 
 from decimal import Decimal
 
-__version__ = '1.0.0'
+__version__ = '1.0.2'
 
 
 class InvalidThresholdMultiplierError(Exception):
@@ -35,12 +35,13 @@ class PathScanner(object):
     files larger than a threshold, and detailing their location so that you can
     see where your largest disk consumption is.
     """
-    def __init__(self, working_dir=None, file_threshold="1k", folder_threshold="1m", limit=25):
+    def __init__(self, working_dir=None, file_threshold="1k", folder_threshold="1m", limit=25, max_depth=None):
         if not working_dir:
             working_dir = os.getcwd()
         self.summary_tree = {}
         self.working_dir = working_dir
         self.limit = limit
+        self.max_depth = max_depth
         try:
             self.file_threshold = self._parse_filesize(file_threshold)
             self.folder_threshold = self._parse_filesize(folder_threshold)
@@ -133,18 +134,20 @@ class PathScanner(object):
             bytes = round(Decimal(str(float(bytes) / float(divisor))), places)
         return "%s %s" % (bytes, label)
 
-    def _fill_node(self, full_path, node, dirs, files):
+    def _fill_node(self, full_path, node, dirs, files, depth=0):
         """
         Where the magic happens. This recursive method traverses the file
         system, and figures out file sizes, directory sizes in terms of files,
         etc.
         """
+        if self.max_depth and depth > self.max_depth:
+            return None
         dir_size = 0
         tmp = {'full_path': full_path, 'name': node, 'dirs': [], 'files': []}
         for dir_name in dirs:
             _full_path, _dirs, _files = self._stat_node(os.path.join(full_path, dir_name))
             _name = os.path.basename(_full_path)
-            contents = self._fill_node(_full_path, _name, _dirs, _files)
+            contents = self._fill_node(_full_path, _name, _dirs, _files, depth=depth + 1)
             if contents:
                 dir_size += contents['size']
                 if contents['size'] >= self.folder_threshold:
@@ -202,9 +205,10 @@ def sp_main(argv=None):
     parser.add_option('-T', action="store", default="1m", dest='dir_threshold', help="Minimum directory size to be listed.(ex. 1m, 13k, 2k, 5g, 12332828)")
     parser.add_option('-t', action="store", default="1k", dest='file_threshold', help="Minimum file size to be listed.(ex. 1m, 13k, 2k, 5g, 12332828)")
     parser.add_option('-l', action="store", default=25, dest='max_file_results', type='int', help="The maximum number of files to list per directory. Files are sorted largest to smallest. -1 = all")
+    parser.add_option('-m', action="store", default=None, dest='max_depth', type='int', help="The maximum depth to traverse.")
     options, values = parser.parse_args(argv)
     try:
-        pe = PathScanner(options.working_dir, options.file_threshold, options.dir_threshold, options.max_file_results)
+        pe = PathScanner(options.working_dir, options.file_threshold, options.dir_threshold, options.max_file_results, options.max_depth)
         pe.scan()
         sys.exit(0)
     except Usage, err:
@@ -213,7 +217,7 @@ def sp_main(argv=None):
         sys.exit(2)
     except KeyboardInterrupt:
         sys.exit(0)
-    except IOError as e:
+    except IOError, e:
         if 'Broken pipe' in str(e):
             # The user is probably piping to a pager like less(1) and has exited
             # it. Just exit.

@@ -31,7 +31,7 @@ easy_installable::
 
 Alternatively, download and unpack the tarball and install::
 
-  $ tar zxf sp-1.0.0.tar.gz
+  $ tar zxf sp-1.0.2.tar.gz
   $ python setup.py install
 
 On UNIX systems, use sudo for the latter command if you need to install the

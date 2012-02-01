@@ -4,6 +4,12 @@ sp is a command line tool for finding files hogging your disk space.
  GIT:      https://github.com/pthrasher/sp.git
  License:  Unlicense
 
-sp 1.0.0 is an initial release.
+sp 1.0.2 is a feature release.
 
-  * First release
+  * Allows you to specify a max depth to traverse
+
+sp 1.0.1 is a bug-fix release.
+
+  * Now compatible with python versions <= 2.4.3
+
+sp 1.0.0 - First release
