@@ -1,2 +1,2 @@
-*.txt
-*.rst
+include *.txt
+include *.rst

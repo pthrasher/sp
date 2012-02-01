@@ -64,6 +64,7 @@ To recursively search from the current directory with default settings:
   $ sp
 
 To do anything else, see the help.
+
   $ sp --help
 
 

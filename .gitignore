@@ -1,2 +1,4 @@
 dist/
 sp.egg-info/
+.DS_Store
+*.pyc

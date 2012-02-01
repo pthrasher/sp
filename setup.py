@@ -18,7 +18,7 @@ setup(
     description = "Quickly find out which directories / files are hogging your disk space.",
     license = "Unlicense",
     classifiers = [
-        "License :: Unlicense",
+        "License :: Public Domain",
         "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: System Administrators",
