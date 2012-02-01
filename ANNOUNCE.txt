@@ -1,0 +1,9 @@
+sp is a command line tool for finding files hogging your disk space.
+
+ Download: http://pypi.python.org/pypi/sp
+ GIT:      https://github.com/pthrasher/sp.git
+ License:  Unlicense
+
+sp 1.0.0 is an initial release.
+
+  * First release
