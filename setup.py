@@ -11,13 +11,13 @@ f.close()
 
 
 setup(
-    name = 'sp',
-    version = '1.0.2',
-    author = 'Philip Thrasher',
-    author_email = 'philipthrasher@gmail.com',
-    description = "Quickly find out which directories / files are hogging your disk space.",
-    license = "Unlicense",
-    classifiers = [
+    name='sp',
+    version='1.1.0',
+    author='Philip Thrasher',
+    author_email='philipthrasher@gmail.com',
+    description="Quickly find out which directories / files are hogging your disk space.",
+    license="Unlicense",
+    classifiers=[
         "License :: Public Domain",
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
@@ -26,9 +26,9 @@ setup(
         "Programming Language :: Python",
         "Topic :: Utilities",
     ],
-    py_modules = ["sp"],
-    entry_points = dict(
-        console_scripts = [
+    py_modules=["sp"],
+    entry_points=dict(
+        console_scripts=[
             "sp = sp:sp_main",
         ],
     ),

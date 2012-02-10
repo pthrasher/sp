@@ -15,10 +15,10 @@ import optparse
 
 from decimal import Decimal
 
-__version__ = '1.0.2'
+__version__ = '1.1.1'
 __description__ = """sp is a simple command with only a few options. It will let you know where
 your worst disk space offenders reside. It will either output to stdout,
-or optionally, you can specify an out file as your last argument, and it 
+or optionally, you can specify an out file as your last argument, and it
 will write the results there."""
 
 
@@ -117,7 +117,7 @@ class PathScanner(object):
 
     def _stat_node(self, node_path):
         """
-        
+
         """
         _dirs = []
         _files = []
@@ -129,7 +129,7 @@ class PathScanner(object):
                 if self.follow_mounts:
                     _stat = os.stat(item)
                     _item = {
-                        'name':name,
+                        'name': name,
                         'full_path': item,
                         'size': _stat.st_size
                     }
@@ -138,7 +138,7 @@ class PathScanner(object):
                 if self.follow_links:
                     _stat = os.stat(item)
                     _item = {
-                        'name':name,
+                        'name': name,
                         'full_path': item,
                         'size': _stat.st_size
                     }
@@ -146,7 +146,7 @@ class PathScanner(object):
             elif os.path.isdir(item):
                 _stat = os.stat(item)
                 _item = {
-                    'name':name,
+                    'name': name,
                     'full_path': item,
                     'size': _stat.st_size
                 }
@@ -154,17 +154,17 @@ class PathScanner(object):
             elif os.path.isfile(item) and not os.path.islink(item):
                 _stat = os.stat(item)
                 _item = {
-                    'name':name,
+                    'name': name,
                     'full_path': item,
                     'size': _stat.st_size
                 }
                 _files.append(_item)
 
         return {
-            'full_path':node_path,
+            'full_path': node_path,
             'name': os.path.basename(node_path),
-            'dirs':_dirs,
-            'files':_files
+            'dirs': _dirs,
+            'files': _files
         }
 
     def _get_human_value(self, bytes, places=2):
@@ -199,7 +199,7 @@ class PathScanner(object):
         """
         if self.max_depth != None and depth > self.max_depth:
             return None
-        
+
         dir_size = 0
         hv_widths = []
 
@@ -217,7 +217,7 @@ class PathScanner(object):
                 if dir_contents['size'] >= self.folder_threshold:
                     if self.max_list_depth == None or \
                         (self.max_list_depth != None and depth <= self.max_list_depth):
-                        
+
                         dir_contents['human_size'] = self._get_human_value(dir_contents['size'])
                         hv_widths.append(dir_contents['max_width'])
                         hv_widths.append(len(dir_contents['human_size']))
@@ -232,7 +232,7 @@ class PathScanner(object):
                     hv_widths.append(len(f['human_size']))
 
                     _files.append(f)
-        
+
         human_size = self._get_human_value(dir_size)
         hv_widths.append(len(human_size))
 
@@ -281,7 +281,7 @@ class PathScanner(object):
         """
         do = self._stat_node(self.working_dir)
         self.all_data = self._fill_node(do['full_path'], do['name'], do['dirs'], do['files'])
-    
+
     def results(self):
         return self._print_data(self.all_data, max_width=self.all_data['max_width'])
 
