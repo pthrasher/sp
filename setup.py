@@ -15,6 +15,7 @@ setup(
     version='1.1.0',
     author='Philip Thrasher',
     author_email='philipthrasher@gmail.com',
+    url="http://github.com/pthrasher/sp",
     description="Quickly find out which directories / files are hogging your disk space.",
     license="Unlicense",
     classifiers=[
